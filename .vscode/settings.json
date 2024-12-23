@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "none_sweeper.sln"
+    "dotnet.defaultSolution": "nein_sweeper.sln"
 }
