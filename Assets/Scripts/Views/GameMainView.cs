@@ -4,6 +4,7 @@ using System.Linq;
 using R3;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameMainView : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class GameMainView : MonoBehaviour
     [SerializeField] FieldItemView fieldItemViewPrefab;
     [SerializeField] TextMeshProUGUI timerLabel;
     [SerializeField] TextMeshProUGUI mineCountLabel;
+    [SerializeField] Button resetButton;
 
     private List<FieldItemView> fieldItems;
 
@@ -39,5 +41,10 @@ public class GameMainView : MonoBehaviour
     public void UpdateMineCount(int count)
     {
         mineCountLabel.text = count.ToString("000");
+    }
+
+    public Observable<Unit> OnResetButtonClickedAsObservable()
+    {
+        return resetButton.OnClickAsObservable();
     }
 }

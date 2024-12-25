@@ -377,6 +377,7 @@ MonoBehaviour:
   fieldItemViewPrefab: {fileID: 2776849241386432082, guid: b663f108791df45f882a3f7da56c7048, type: 3}
   timerLabel: {fileID: 445132227}
   mineCountLabel: {fileID: 23689101}
+  resetButton: {fileID: 4155202713146196514}
 --- !u!1 &445132225
 GameObject:
   m_ObjectHideFlags: 0
@@ -970,7 +971,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: Reset
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

@@ -21,6 +21,7 @@ public class GameMainPresenter : MonoBehaviour
         view.Initialize(width, height, index => OnClickFieldItem(index % width, index / width));
         SubscribeTimer();
         Reset();
+        view.OnResetButtonClickedAsObservable().Subscribe(_ => Reset()).AddTo(this);
     }
 
     void Update()
