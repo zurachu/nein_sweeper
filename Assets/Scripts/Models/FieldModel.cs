@@ -12,17 +12,24 @@ public class FieldModel
 {
     private int width { get; set; }
     private int height { get; set; }
+    private int mineCount { get; set; }
     private List<bool> mines { get; set; }
     private List<bool> opens { get; set; }
     private List<Mark> marks { get; set; }
 
-    public FieldModel(int width, int height, int count, int ignoredX, int ignoredY)
+    public FieldModel(int width, int height, int mineCount)
     {
         this.width = width;
         this.height = height;
-        mines = CreateRandomMines(count, ignoredX, ignoredY);
+        this.mineCount = mineCount;
+        ResetRandomMines(0, 0);
         opens = Enumerable.Repeat(false, width * height).ToList();
         marks = Enumerable.Repeat(Mark.None, width * height).ToList();
+    }
+
+    public void ResetRandomMines(int ignoredX, int ignoredY)
+    {
+        mines = CreateRandomMines(ignoredX, ignoredY);
     }
 
     public bool IsOpenedAny()
@@ -38,6 +45,11 @@ public class FieldModel
     public int NoFlagMineCount()
     {
         return mines.Count(isMine => isMine) - marks.Count(mark => mark == Mark.Flag);
+    }
+
+    public bool CanOpen(int x, int y)
+    {
+        return !IsCompleted() && !IsOpened(x, y) && !IsMarked(x, y);
     }
 
     public bool IsMine(int x, int y)
@@ -115,15 +127,15 @@ public class FieldModel
         }
     }
 
-    private List<bool> CreateRandomMines(int count, int ignoredX, int ignoredY)
+    private List<bool> CreateRandomMines(int ignoredX = 0, int ignoredY = 0)
     {
         // 初期マスと周囲は爆弾なしにすることで、初手は必ず複数マス開くようにする
         var ignoredIndexes = NearByXYs(ignoredX, ignoredY).Select(xy => Index(xy.Item1, xy.Item2)).ToList();
         ignoredIndexes.Add(Index(ignoredX, ignoredY));
         ignoredIndexes = ignoredIndexes.Where(i => i >= 0).ToList();
 
-        var randomMineList = Enumerable.Repeat(true, count)
-                                       .Concat(Enumerable.Repeat(false, width * height - count - ignoredIndexes.Count))
+        var randomMineList = Enumerable.Repeat(true, mineCount)
+                                       .Concat(Enumerable.Repeat(false, width * height - mineCount - ignoredIndexes.Count))
                                        .Shuffle().ToList();
 
         return Enumerable.Range(0, width * height).Select(i => !ignoredIndexes.Contains(i) && randomMineList.Pop()).ToList();
