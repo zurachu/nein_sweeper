@@ -96,7 +96,7 @@ public class FieldModel
 
         opens[index] = true;
 
-        if (NearByMineCount(x, y) == 0)
+        if (!IsMine(x, y) && NearByMineCount(x, y) == 0)
         {
             NearByXYs(x, y).ForEach(xy => Open(xy.Item1, xy.Item2));
         }
