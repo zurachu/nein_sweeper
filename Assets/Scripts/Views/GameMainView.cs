@@ -2,12 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using R3;
+using TMPro;
 using UnityEngine;
 
 public class GameMainView : MonoBehaviour
 {
     [SerializeField] Transform fieldRoot;
     [SerializeField] FieldItemView fieldItemViewPrefab;
+    [SerializeField] TextMeshProUGUI timerLabel;
+    [SerializeField] TextMeshProUGUI mineCountLabel;
 
     private List<FieldItemView> fieldItems;
 
@@ -26,5 +29,15 @@ public class GameMainView : MonoBehaviour
         {
             fieldItems[index].UpdateView(parameter);
         }
+    }
+
+    public void UpdateTimer(float time)
+    {
+        timerLabel.text = Mathf.Clamp(time, 0, 999.999f).ToString("000.000");
+    }
+
+    public void UpdateMineCount(int count)
+    {
+        mineCountLabel.text = count.ToString("000");
     }
 }

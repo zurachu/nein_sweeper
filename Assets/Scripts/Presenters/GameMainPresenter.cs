@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using R3;
 using UnityEngine;
 using unityroom.Api;
 
@@ -13,10 +14,12 @@ public class GameMainPresenter : MonoBehaviour
     [SerializeField] private Sprite mineSprite;
 
     private FieldModel field;
+    private TimerModel timer;
 
     void Start()
     {
         view.Initialize(width, height, index => OnClickFieldItem(index % width, index / width));
+        SubscribeTimer();
         Reset();
     }
 
@@ -35,6 +38,7 @@ public class GameMainPresenter : MonoBehaviour
         if (!field.IsOpenedAny())
         {
             field.ResetRandomMines(x, y);
+            timer.Run();
             // TODO: Fix mode
         }
 
@@ -55,18 +59,27 @@ public class GameMainPresenter : MonoBehaviour
     private void Reset()
     {
         field = new FieldModel(width, height, mineCount);
+        timer.Reset();
         UpdateView();
+    }
+
+    private void SubscribeTimer()
+    {
+        timer = new TimerModel();
+        timer.RunningUpdateObservable().Subscribe(_ => timer.CurrentTime.Value += Time.deltaTime).AddTo(this);
+        timer.CurrentTime.Subscribe(view.UpdateTimer).AddTo(this);
     }
 
     private void GameOver()
     {
-
+        timer.Stop();
     }
 
     private void GameClear()
     {
         field.FlagAllMines();
-        UnityroomApiClient.Instance.SendScore(1, 123.45f, ScoreboardWriteMode.HighScoreAsc);
+        timer.Stop();
+        UnityroomApiClient.Instance.SendScore(1, timer.CurrentTime.Value, ScoreboardWriteMode.HighScoreAsc);
     }
 
     private void UpdateView()
@@ -77,5 +90,6 @@ public class GameMainPresenter : MonoBehaviour
                 sprite = field.IsMine(x, y) ? mineSprite : normalSpritePreset[field.NearByMineCount(x, y)],
                 isOpened = field.IsOpened(x, y),
             })));
+        view.UpdateMineCount(field.NoFlagMineCount());
     }
 }
