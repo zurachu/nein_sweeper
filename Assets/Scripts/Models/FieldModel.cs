@@ -39,7 +39,12 @@ public class FieldModel
 
     public bool IsCompleted()
     {
-        return Enumerable.Range(0, width * height).All(i => mines[i] || opens[i]);
+        return Enumerable.Range(0, width * height).All(i => mines[i] ^ opens[i]);
+    }
+
+    public bool IsMineOpened()
+    {
+        return Enumerable.Range(0, width * height).Any(i => mines[i] && opens[i]);
     }
 
     public int NoFlagMineCount()

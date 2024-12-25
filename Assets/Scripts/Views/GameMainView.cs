@@ -13,6 +13,14 @@ public class GameMainView : MonoBehaviour
     [SerializeField] TextMeshProUGUI timerLabel;
     [SerializeField] TextMeshProUGUI mineCountLabel;
     [SerializeField] Button resetButton;
+    [SerializeField] GameObject touchGuard;
+
+    public class Parameter
+    {
+        public bool isPlayable;
+        public int mineCount;
+        public IEnumerable<FieldItemView.Parameter> itemParameters;
+    }
 
     private List<FieldItemView> fieldItems;
 
@@ -25,22 +33,19 @@ public class GameMainView : MonoBehaviour
         }
     }
 
-    public void UpdateView(IEnumerable<FieldItemView.Parameter> parameters)
+    public void UpdateView(Parameter parameter)
     {
-        foreach (var (parameter, index) in parameters.WithIndex())
+        touchGuard.SetActive(!parameter.isPlayable);
+        mineCountLabel.text = parameter.mineCount.ToString("000");
+        foreach (var (itemParameter, index) in parameter.itemParameters.WithIndex())
         {
-            fieldItems[index].UpdateView(parameter);
+            fieldItems[index].UpdateView(itemParameter);
         }
     }
 
     public void UpdateTimer(float time)
     {
         timerLabel.text = Mathf.Clamp(time, 0, 999.999f).ToString("000.000");
-    }
-
-    public void UpdateMineCount(int count)
-    {
-        mineCountLabel.text = count.ToString("000");
     }
 
     public Observable<Unit> OnResetButtonClickedAsObservable()

@@ -85,12 +85,16 @@ public class GameMainPresenter : MonoBehaviour
 
     private void UpdateView()
     {
-        view.UpdateView(Enumerable.Range(0, height).SelectMany(y => Enumerable.Range(0, width).Select(x =>
+        view.UpdateView(new GameMainView.Parameter
+        {
+            isPlayable = !field.IsCompleted() && !field.IsMineOpened(),
+            mineCount = field.NoFlagMineCount(),
+            itemParameters = Enumerable.Range(0, height).SelectMany(y => Enumerable.Range(0, width).Select(x =>
             new FieldItemView.Parameter
             {
                 sprite = field.IsMine(x, y) ? mineSprite : normalSpritePreset[field.NearByMineCount(x, y)],
                 isOpened = field.IsOpened(x, y),
-            })));
-        view.UpdateMineCount(field.NoFlagMineCount());
+            })),
+        });
     }
 }
