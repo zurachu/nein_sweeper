@@ -24,12 +24,13 @@ public class GameMainView : MonoBehaviour
 
     private List<FieldItemView> fieldItems;
 
-    public void Initialize(int width, int height, Action<int> onClick)
+    public void Initialize(int width, int height, Action<int> onClick, Action<int> onClickRight)
     {
         fieldItems = Enumerable.Range(0, width * height).Select(_ => Instantiate(fieldItemViewPrefab, fieldRoot)).ToList();
         foreach (var (item, index) in fieldItems.WithIndex())
         {
             item.OnButtonClickedAsObservable().Subscribe(u => onClick?.Invoke(index)).AddTo(this);
+            item.OnRightButtonClickedAsObservable().Subscribe(e => onClickRight?.Invoke(index)).AddTo(this);
         }
     }
 

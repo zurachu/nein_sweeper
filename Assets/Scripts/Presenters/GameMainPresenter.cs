@@ -12,13 +12,17 @@ public class GameMainPresenter : MonoBehaviour
     [SerializeField] private int mineCount;
     [SerializeField] private List<Sprite> normalSpritePreset;
     [SerializeField] private Sprite mineSprite;
+    [SerializeField] private Sprite flagSprite;
+    [SerializeField] private Sprite questionSprite;
 
     private FieldModel field;
     private TimerModel timer;
 
     void Start()
     {
-        view.Initialize(width, height, index => OnClickFieldItem(index % width, index / width));
+        view.Initialize(width, height,
+            index => OnClickFieldItem(index % width, index / width),
+            index => OnRightClickFieldItem(index % width, index / width));
         SubscribeTimer();
         Reset();
         view.OnResetButtonClickedAsObservable().Subscribe(_ => Reset()).AddTo(this);
@@ -54,6 +58,17 @@ public class GameMainPresenter : MonoBehaviour
             GameClear();
         }
 
+        UpdateView();
+    }
+
+    private void OnRightClickFieldItem(int x, int y)
+    {
+        if (field.IsOpened(x, y))
+        {
+            return;
+        }
+
+        field.RotateMark(x, y);
         UpdateView();
     }
 
@@ -93,8 +108,19 @@ public class GameMainPresenter : MonoBehaviour
             new FieldItemView.Parameter
             {
                 sprite = field.IsMine(x, y) ? mineSprite : normalSpritePreset[field.NearByMineCount(x, y)],
+                markSprite = MarkSprite(x, y),
                 isOpened = field.IsOpened(x, y),
             })),
         });
+    }
+
+    private Sprite MarkSprite(int x, int y)
+    {
+        return field.GetMark(x, y) switch
+        {
+            Mark.Flag => flagSprite,
+            Mark.Question => questionSprite,
+            _ => null,
+        };
     }
 }

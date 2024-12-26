@@ -881,6 +881,8 @@ MonoBehaviour:
   - {fileID: 7028616704906629411, guid: 49f93da146cf149b3b1e0400e8fb5d30, type: 3}
   - {fileID: 8288426215254106694, guid: 5b1a12177f9194983a3e26c42dad6941, type: 3}
   mineSprite: {fileID: -5933715298724706184, guid: 67c62c91e9515419ea66f8107c8f089a, type: 3}
+  flagSprite: {fileID: -5154189640090123692, guid: bd47caf4b579242639ae9fb08e079d10, type: 3}
+  questionSprite: {fileID: 1409830513793316728, guid: 9b58f7f72da444d2c95079b950701147, type: 3}
 --- !u!1001 &339018394006601402
 PrefabInstance:
   m_ObjectHideFlags: 0
