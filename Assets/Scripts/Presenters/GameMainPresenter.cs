@@ -11,10 +11,12 @@ public class GameMainPresenter : MonoBehaviour
     [SerializeField] private int height;
     [SerializeField] private int mineCount;
     [SerializeField] private List<Sprite> normalSpritePreset;
+    [SerializeField] private List<Sprite> reverseSpritePreset;
     [SerializeField] private Sprite mineSprite;
     [SerializeField] private Sprite flagSprite;
     [SerializeField] private Sprite questionSprite;
 
+    private List<Sprite> spritePreset;
     private FieldModel field;
     private TimerModel timer;
 
@@ -24,6 +26,8 @@ public class GameMainPresenter : MonoBehaviour
             index => OnClickFieldItem(index % width, index / width),
             index => OnRightClickFieldItem(index % width, index / width));
         SubscribeTimer();
+        OnModeChanged(0);
+        view.OnModeDropdownValueChangedAsObservable().Subscribe(i => OnModeChanged(i)).AddTo(this);
         Reset();
         view.OnResetButtonClickedAsObservable().Subscribe(_ => Reset()).AddTo(this);
     }
@@ -86,6 +90,23 @@ public class GameMainPresenter : MonoBehaviour
         timer.CurrentTime.Subscribe(view.UpdateTimer).AddTo(this);
     }
 
+    private void OnModeChanged(int mode)
+    {
+        spritePreset = mode switch
+        {
+            1 => normalSpritePreset,
+            2 => ShuffleSpritePreset(),
+            _ => reverseSpritePreset,
+        };
+    }
+
+    private List<Sprite> ShuffleSpritePreset()
+    {
+        // TODO: "0" 画像を含む逆プリセットを正順に戻してから、一つも同じ数値に対応しないようにシャッフルする
+        var list = reverseSpritePreset.Reverse<Sprite>();
+        return list.ToList();
+    }
+
     private void GameOver()
     {
         timer.Stop();
@@ -103,11 +124,12 @@ public class GameMainPresenter : MonoBehaviour
         view.UpdateView(new GameMainView.Parameter
         {
             isPlayable = !field.IsCompleted() && !field.IsMineOpened(),
+            isPlaying = field.IsOpenedAny(),
             mineCount = field.NoFlagMineCount(),
             itemParameters = Enumerable.Range(0, height).SelectMany(y => Enumerable.Range(0, width).Select(x =>
             new FieldItemView.Parameter
             {
-                sprite = field.IsMine(x, y) ? mineSprite : normalSpritePreset[field.NearByMineCount(x, y)],
+                sprite = field.IsMine(x, y) ? mineSprite : spritePreset[field.NearByMineCount(x, y)],
                 markSprite = MarkSprite(x, y),
                 isOpened = field.IsOpened(x, y),
             })),

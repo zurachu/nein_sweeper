@@ -13,11 +13,13 @@ public class GameMainView : MonoBehaviour
     [SerializeField] TextMeshProUGUI timerLabel;
     [SerializeField] TextMeshProUGUI mineCountLabel;
     [SerializeField] Button resetButton;
+    [SerializeField] TMP_Dropdown modeDropdown;
     [SerializeField] GameObject touchGuard;
 
     public class Parameter
     {
         public bool isPlayable;
+        public bool isPlaying;
         public int mineCount;
         public IEnumerable<FieldItemView.Parameter> itemParameters;
     }
@@ -37,6 +39,7 @@ public class GameMainView : MonoBehaviour
     public void UpdateView(Parameter parameter)
     {
         touchGuard.SetActive(!parameter.isPlayable);
+        modeDropdown.interactable = !parameter.isPlaying;
         mineCountLabel.text = parameter.mineCount.ToString(parameter.mineCount >= 0 ? "0000" : "000");
         foreach (var (itemParameter, index) in parameter.itemParameters.WithIndex())
         {
@@ -52,5 +55,10 @@ public class GameMainView : MonoBehaviour
     public Observable<Unit> OnResetButtonClickedAsObservable()
     {
         return resetButton.OnClickAsObservable();
+    }
+
+    public Observable<int> OnModeDropdownValueChangedAsObservable()
+    {
+        return modeDropdown.OnValueChangedAsObservable();
     }
 }
