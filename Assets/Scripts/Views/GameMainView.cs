@@ -37,7 +37,7 @@ public class GameMainView : MonoBehaviour
     public void UpdateView(Parameter parameter)
     {
         touchGuard.SetActive(!parameter.isPlayable);
-        mineCountLabel.text = parameter.mineCount.ToString("000");
+        mineCountLabel.text = parameter.mineCount.ToString(parameter.mineCount >= 0 ? "0000" : "000");
         foreach (var (itemParameter, index) in parameter.itemParameters.WithIndex())
         {
             fieldItems[index].UpdateView(itemParameter);
