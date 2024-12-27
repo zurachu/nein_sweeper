@@ -52,13 +52,10 @@ public class GameMainView : MonoBehaviour
         timerLabel.text = Mathf.Clamp(time, 0, 999.999f).ToString("000.000");
     }
 
-    public Observable<Unit> OnResetButtonClickedAsObservable()
+    public Observable<int> OnResetModeAsObservable()
     {
-        return resetButton.OnClickAsObservable();
-    }
-
-    public Observable<int> OnModeDropdownValueChangedAsObservable()
-    {
-        return modeDropdown.OnValueChangedAsObservable();
+        return Observable.Merge(
+            resetButton.OnClickAsObservable().Select(_ => modeDropdown.value),
+            modeDropdown.OnValueChangedAsObservable());
     }
 }

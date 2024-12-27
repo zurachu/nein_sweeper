@@ -19,6 +19,7 @@ public class GameMainPresenter : MonoBehaviour
     private List<Sprite> spritePreset;
     private FieldModel field;
     private TimerModel timer;
+    private int scoreBoardNo;
 
     void Start()
     {
@@ -26,15 +27,8 @@ public class GameMainPresenter : MonoBehaviour
             index => OnClickFieldItem(index % width, index / width),
             index => OnRightClickFieldItem(index % width, index / width));
         SubscribeTimer();
-        OnModeChanged(0);
-        view.OnModeDropdownValueChangedAsObservable().Subscribe(i => OnModeChanged(i)).AddTo(this);
-        Reset();
-        view.OnResetButtonClickedAsObservable().Subscribe(_ => Reset()).AddTo(this);
-    }
-
-    void Update()
-    {
-
+        ResetMode(0);
+        view.OnResetModeAsObservable().Subscribe(i => ResetMode(i)).AddTo(this);
     }
 
     private void OnClickFieldItem(int x, int y)
@@ -48,7 +42,6 @@ public class GameMainPresenter : MonoBehaviour
         {
             field.ResetRandomMines(x, y);
             timer.Run();
-            // TODO: Fix mode
         }
 
         field.Open(x, y);
@@ -76,10 +69,25 @@ public class GameMainPresenter : MonoBehaviour
         UpdateView();
     }
 
-    private void Reset()
+    private void ResetMode(int mode)
     {
         field = new FieldModel(width, height, mineCount);
         timer.Reset();
+
+        spritePreset = mode switch
+        {
+            1 => normalSpritePreset,
+            2 => ShuffleSpritePreset(),
+            _ => reverseSpritePreset,
+        };
+
+        scoreBoardNo = mode switch
+        {
+            1 => 0,
+            2 => 2,
+            _ => 1,
+        };
+
         UpdateView();
     }
 
@@ -90,21 +98,16 @@ public class GameMainPresenter : MonoBehaviour
         timer.CurrentTime.Subscribe(view.UpdateTimer).AddTo(this);
     }
 
-    private void OnModeChanged(int mode)
-    {
-        spritePreset = mode switch
-        {
-            1 => normalSpritePreset,
-            2 => ShuffleSpritePreset(),
-            _ => reverseSpritePreset,
-        };
-    }
-
     private List<Sprite> ShuffleSpritePreset()
     {
-        // TODO: "0" 画像を含む逆プリセットを正順に戻してから、一つも同じ数値に対応しないようにシャッフルする
-        var list = reverseSpritePreset.Reverse<Sprite>();
-        return list.ToList();
+        // "0" 画像を含む逆プリセットを正順に戻してから、一つも同じ数値に対応しないようにシャッフルする
+        var list = reverseSpritePreset.Reverse<Sprite>().ToList();
+        for (var i = 0; i < list.Count - 1; i++)
+        {
+            var swapIndex = Random.Range(i + 1, list.Count);
+            (list[i], list[swapIndex]) = (list[swapIndex], list[i]);
+        }
+        return list;
     }
 
     private void GameOver()
@@ -116,7 +119,10 @@ public class GameMainPresenter : MonoBehaviour
     {
         field.FlagAllMines();
         timer.Stop();
-        UnityroomApiClient.Instance.SendScore(1, timer.CurrentTime.Value, ScoreboardWriteMode.HighScoreAsc);
+        if (scoreBoardNo > 0)
+        {
+            UnityroomApiClient.Instance.SendScore(scoreBoardNo, timer.CurrentTime.Value, ScoreboardWriteMode.HighScoreAsc);
+        }
     }
 
     private void UpdateView()
