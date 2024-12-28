@@ -173,7 +173,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      ng_mine_0: 4817657401086272517
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
