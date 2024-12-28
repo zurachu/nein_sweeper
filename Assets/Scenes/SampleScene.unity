@@ -1961,6 +1961,7 @@ MonoBehaviour:
   - {fileID: -855298285791758126, guid: 78bb7da0242ae47928a839ac0f7ac68f, type: 3}
   - {fileID: 5088316998373936774, guid: 0f5b7f697da4b4925a28807ddf2e4573, type: 3}
   mineSprite: {fileID: -5933715298724706184, guid: 67c62c91e9515419ea66f8107c8f089a, type: 3}
+  ngMineSprite: {fileID: 4817657401086272517, guid: 0b6f27f6f58e342a9b6246a04ba84aed, type: 3}
   flagSprite: {fileID: -5154189640090123692, guid: bd47caf4b579242639ae9fb08e079d10, type: 3}
   questionSprite: {fileID: 1409830513793316728, guid: 9b58f7f72da444d2c95079b950701147, type: 3}
 --- !u!1 &1320817101

@@ -13,6 +13,7 @@ public class GameMainPresenter : MonoBehaviour
     [SerializeField] private List<Sprite> normalSpritePreset;
     [SerializeField] private List<Sprite> reverseSpritePreset;
     [SerializeField] private Sprite mineSprite;
+    [SerializeField] private Sprite ngMineSprite;
     [SerializeField] private Sprite flagSprite;
     [SerializeField] private Sprite questionSprite;
 
@@ -127,20 +128,41 @@ public class GameMainPresenter : MonoBehaviour
 
     private void UpdateView()
     {
+        var isMineOpened = field.IsMineOpened();
         view.UpdateView(new GameMainView.Parameter
         {
-            isPlayable = !field.IsCompleted() && !field.IsMineOpened(),
+            isPlayable = !field.IsCompleted() && !isMineOpened,
             isCompleted = field.IsCompleted(),
             isPlaying = field.IsOpenedAny(),
             mineCount = field.NoFlagMineCount(),
             itemParameters = Enumerable.Range(0, height).SelectMany(y => Enumerable.Range(0, width).Select(x =>
             new FieldItemView.Parameter
             {
-                sprite = field.IsMine(x, y) ? mineSprite : spritePreset[field.NearByMineCount(x, y)],
+                sprite = GetSprite(x, y),
                 markSprite = MarkSprite(x, y),
-                isOpened = field.IsOpened(x, y),
+                isOpened = (isMineOpened && field.IsMine(x, y)) || field.IsOpened(x, y),
             })),
         });
+    }
+
+    private Sprite GetSprite(int x, int y)
+    {
+        if (!field.IsMine(x, y))
+        {
+            return spritePreset[field.NearByMineCount(x, y)];
+        }
+
+        if (field.IsOpened(x, y))
+        {
+            return ngMineSprite;
+        }
+
+        if (field.IsMineOpened() && field.IsMarked(x, y))
+        {
+            return ngMineSprite;
+        }
+
+        return mineSprite;
     }
 
     private Sprite MarkSprite(int x, int y)
