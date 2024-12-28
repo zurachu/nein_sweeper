@@ -81,6 +81,11 @@ public class FieldModel
         return index >= 0 ? marks[index] : Mark.None;
     }
 
+    public bool IsFlaged(int x, int y)
+    {
+        return GetMark(x, y) == Mark.Flag;
+    }
+
     public int NearByMineCount(int x, int y)
     {
         return NearByXYs(x, y).Count(xy => IsMine(xy.Item1, xy.Item2));

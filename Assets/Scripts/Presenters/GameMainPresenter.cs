@@ -14,6 +14,7 @@ public class GameMainPresenter : MonoBehaviour
     [SerializeField] private List<Sprite> reverseSpritePreset;
     [SerializeField] private Sprite mineSprite;
     [SerializeField] private Sprite ngMineSprite;
+    [SerializeField] private Sprite ngFlagSprite;
     [SerializeField] private Sprite flagSprite;
     [SerializeField] private Sprite questionSprite;
 
@@ -129,6 +130,25 @@ public class GameMainPresenter : MonoBehaviour
     private void UpdateView()
     {
         var isMineOpened = field.IsMineOpened();
+
+        bool IsShowAsOpened(int x, int y)
+        {
+            if (isMineOpened)
+            {
+                if (field.IsMine(x, y) && !field.IsMarked(x, y))
+                {
+                    return true;
+                }
+
+                if (field.IsFlaged(x, y) && !field.IsMine(x, y))
+                {
+                    return true;
+                }
+            }
+
+            return field.IsOpened(x, y);
+        }
+
         view.UpdateView(new GameMainView.Parameter
         {
             isPlayable = !field.IsCompleted() && !isMineOpened,
@@ -140,29 +160,25 @@ public class GameMainPresenter : MonoBehaviour
             {
                 sprite = GetSprite(x, y),
                 markSprite = MarkSprite(x, y),
-                isOpened = (isMineOpened && field.IsMine(x, y)) || field.IsOpened(x, y),
+                isOpened = IsShowAsOpened(x, y),
             })),
         });
     }
 
     private Sprite GetSprite(int x, int y)
     {
-        if (!field.IsMine(x, y))
+        if (field.IsMine(x, y))
         {
-            return spritePreset[field.NearByMineCount(x, y)];
+            return field.IsOpened(x, y)
+                ? ngMineSprite
+                : mineSprite;
         }
-
-        if (field.IsOpened(x, y))
+        else
         {
-            return ngMineSprite;
+            return field.IsMineOpened() && field.IsFlaged(x, y)
+                ? ngFlagSprite
+                : spritePreset[field.NearByMineCount(x, y)];
         }
-
-        if (field.IsMineOpened() && field.IsMarked(x, y))
-        {
-            return ngMineSprite;
-        }
-
-        return mineSprite;
     }
 
     private Sprite MarkSprite(int x, int y)
