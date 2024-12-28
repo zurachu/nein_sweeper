@@ -28,14 +28,9 @@ public class GameMainView : MonoBehaviour
 
     private List<FieldItemView> fieldItems;
 
-    public void Initialize(int width, int height, Action<int> onClick, Action<int> onClickRight)
+    public void Initialize(int width, int height)
     {
         fieldItems = Enumerable.Range(0, width * height).Select(_ => Instantiate(fieldItemViewPrefab, fieldRoot)).ToList();
-        foreach (var (item, index) in fieldItems.WithIndex())
-        {
-            item.OnButtonClickedAsObservable().Subscribe(u => onClick?.Invoke(index)).AddTo(this);
-            item.OnRightButtonClickedAsObservable().Subscribe(e => onClickRight?.Invoke(index)).AddTo(this);
-        }
     }
 
     public void UpdateView(Parameter parameter)
@@ -60,5 +55,15 @@ public class GameMainView : MonoBehaviour
         return Observable.Merge(
             resetButton.OnClickAsObservable().Select(_ => modeDropdown.value),
             modeDropdown.OnValueChangedAsObservable());
+    }
+
+    public Observable<int> OnFieldClickedAsObservable()
+    {
+        return fieldItems.Select((item, index) => item.OnButtonClickedAsObservable().Select(_ => index)).Merge();
+    }
+
+    public Observable<int> OnFieldRightClickedAsObservable()
+    {
+        return fieldItems.Select((item, index) => item.OnRightButtonClickedAsObservable().Select(_ => index)).Merge();
     }
 }

@@ -25,12 +25,12 @@ public class GameMainPresenter : MonoBehaviour
 
     void Start()
     {
-        view.Initialize(width, height,
-            index => OnClickFieldItem(index % width, index / width),
-            index => OnRightClickFieldItem(index % width, index / width));
+        view.Initialize(width, height);
         SubscribeTimer();
         ResetMode(0);
         view.OnResetModeAsObservable().Subscribe(i => ResetMode(i)).AddTo(this);
+        view.OnFieldClickedAsObservable().Subscribe(index => OnClickFieldItem(index % width, index / width));
+        view.OnFieldRightClickedAsObservable().Subscribe(index => OnRightClickFieldItem(index % width, index / width));
     }
 
     private void OnClickFieldItem(int x, int y)
