@@ -130,6 +130,7 @@ public class GameMainPresenter : MonoBehaviour
         view.UpdateView(new GameMainView.Parameter
         {
             isPlayable = !field.IsCompleted() && !field.IsMineOpened(),
+            isCompleted = field.IsCompleted(),
             isPlaying = field.IsOpenedAny(),
             mineCount = field.NoFlagMineCount(),
             itemParameters = Enumerable.Range(0, height).SelectMany(y => Enumerable.Range(0, width).Select(x =>

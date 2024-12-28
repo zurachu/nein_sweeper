@@ -15,10 +15,12 @@ public class GameMainView : MonoBehaviour
     [SerializeField] Button resetButton;
     [SerializeField] TMP_Dropdown modeDropdown;
     [SerializeField] GameObject touchGuard;
+    [SerializeField] GameObject completedRoot;
 
     public class Parameter
     {
         public bool isPlayable;
+        public bool isCompleted;
         public bool isPlaying;
         public int mineCount;
         public IEnumerable<FieldItemView.Parameter> itemParameters;
@@ -39,6 +41,7 @@ public class GameMainView : MonoBehaviour
     public void UpdateView(Parameter parameter)
     {
         touchGuard.SetActive(!parameter.isPlayable);
+        completedRoot.SetActive(parameter.isCompleted);
         modeDropdown.interactable = !parameter.isPlaying;
         mineCountLabel.text = parameter.mineCount.ToString(parameter.mineCount >= 0 ? "0000" : "000");
         foreach (var (itemParameter, index) in parameter.itemParameters.WithIndex())
